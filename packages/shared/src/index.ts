@@ -49,7 +49,6 @@ export * from "./features/batchAction/applyFieldMapping";
 export { BatchTableNames } from "./interfaces/tableNames";
 
 // in-app agent
-export * from "./features/inAppAgent/types";
 
 // rbac
 export * from "./features/rbac/projectAccessRights";

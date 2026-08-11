@@ -1,4 +1,5 @@
 import type { AgUiMessage } from "@langfuse/shared/in-app-agent";
+import type { InAppAgentUiMessage } from "../schema";
 import {
   createInAppAgentDisplayState,
   projectInAppAgentMessagesForDisplay,
@@ -34,7 +35,7 @@ describe("in-app agent display projection", () => {
         content: "Compare both weeks",
       },
       assistantMessage,
-    ] satisfies AgUiMessage[];
+    ] satisfies InAppAgentUiMessage[];
     const messagesWithBothTools = [
       initialMessages[0],
       {
@@ -182,7 +183,7 @@ describe("in-app agent display projection", () => {
         runId: "run-1",
         feedback: { value: "thumbs_up", comment: null },
       },
-    ] satisfies AgUiMessage[];
+    ] satisfies InAppAgentUiMessage[];
     const reasoningMessages = firstMessages.concat({
       id: "reasoning-2",
       role: "reasoning",

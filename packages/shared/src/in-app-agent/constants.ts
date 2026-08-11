@@ -7,15 +7,10 @@ export const IN_APP_AGENT_SILENT_MCP_OUTPUT_TYPE = "silent-mcp-output";
 export const IN_APP_AGENT_SILENT_MCP_OUTPUT_MESSAGE =
   "Output saved to /workspace/tool_calls";
 
-export const IN_APP_AGENT_MCP_USER_AGENT = "langfuse-in-app-agent";
-
 // Header used only by Langfuse's server-side in-app agent when it calls the
 // Langfuse MCP endpoint with a temporary in-app-agent API key and run override.
 export const IN_APP_AGENT_MCP_TOOL_OVERRIDE_HEADER =
   "x-langfuse-in-app-agent-tool-override";
-
-export const IN_APP_AGENT_LOCAL_SANDBOX_IMAGE =
-  "langfuse-in-app-agent-sandbox:latest";
 
 // Observation ids stay equal to the per-turn run id so persisted messages,
 // feedback, and traced generations all point at the same Langfuse observation.

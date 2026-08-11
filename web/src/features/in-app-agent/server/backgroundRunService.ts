@@ -1,13 +1,7 @@
 import { EventType } from "@ag-ui/core";
 import { randomUUID } from "crypto";
 
-import {
-  BaseError,
-  InAppAgentRunErrorCode,
-  InAppAgentRunStatus,
-  LangfuseNotFoundError,
-  type Plan,
-} from "@langfuse/shared";
+import { BaseError, LangfuseNotFoundError, type Plan } from "@langfuse/shared";
 import { Prisma, type PrismaClient } from "@langfuse/shared/src/db";
 import {
   InAppAgentRunQueue,
@@ -17,12 +11,13 @@ import {
 } from "@langfuse/shared/src/server";
 import { deleteApiKeyFromDb } from "@langfuse/shared/src/server/auth/apiKeys";
 import {
-  createInAppAgentMessageId,
-  createInAppAgentRunId,
+  InAppAgentRunErrorCode,
+  InAppAgentRunStatus,
   parseInAppAgentApprovalDecisionEvent,
   parseInAppAgentInterruptEvent,
-  type AgUiRunAgentInput,
+  type AgUiContext,
 } from "@langfuse/shared/in-app-agent";
+import { createInAppAgentMessageId, createInAppAgentRunId } from "../ids";
 import {
   ensureOwnedConversation,
   getConversationEvents,
@@ -156,7 +151,7 @@ export async function startBackgroundRun(params: {
   conversationId: string;
   userId: string;
   message: string;
-  context: AgUiRunAgentInput["context"];
+  context: AgUiContext;
   isV4Enabled: boolean;
   model: string | undefined;
   aiTelemetryEnabled: boolean;

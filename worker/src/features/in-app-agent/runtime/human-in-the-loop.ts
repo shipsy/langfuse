@@ -1,18 +1,11 @@
 import { EventType } from "@ag-ui/core";
-import { z } from "zod";
-
-import { IN_APP_AGENT_TOOL_REJECTION_ERROR_CODE } from "../constants";
-import {
-  IN_APP_AGENT_LANGFUSE_MCP_TOOL_NAMES,
-  type InAppAgentLangfuseMcpToolName,
-} from "./mcpPolicy";
+import { IN_APP_AGENT_TOOL_REJECTION_ERROR_CODE } from "@langfuse/shared/in-app-agent";
 import {
   type AgUiEvent,
   type AgUiMessage,
-  type AgUiRunAgentInput,
   type InAppAgentToolApprovalRequest,
-  type ResumeForwardedProps,
-} from "../schema";
+} from "@langfuse/shared/in-app-agent";
+import type { AgUiRunAgentInput, ResumeForwardedProps } from "./types";
 
 const MANUAL_TOOL_APPROVAL_REJECTION_MESSAGE =
   "Tool call was not approved by the user.";
@@ -22,28 +15,6 @@ const MANUAL_TOOL_APPROVAL_REJECTION_ERROR = JSON.stringify({
 });
 
 type DeveloperGuidanceMessage = Extract<AgUiMessage, { role: "developer" }>;
-
-const InAppAgentLangfuseMcpToolNameSchema =
-  z.custom<InAppAgentLangfuseMcpToolName>(
-    (value) =>
-      typeof value === "string" &&
-      IN_APP_AGENT_LANGFUSE_MCP_TOOL_NAMES.has(
-        value as InAppAgentLangfuseMcpToolName,
-      ),
-    { message: "Invalid MCP tool name" },
-  );
-
-export const InAppAgentMcpRunOverrideSchema = z.object({
-  toolName: InAppAgentLangfuseMcpToolNameSchema,
-});
-
-export async function createInAppAgentMcpRunOverride(params: {
-  toolName: InAppAgentLangfuseMcpToolName;
-}) {
-  return JSON.stringify({
-    toolName: params.toolName,
-  });
-}
 
 export type ManualToolApprovalRunInput = {
   input: AgUiRunAgentInput;

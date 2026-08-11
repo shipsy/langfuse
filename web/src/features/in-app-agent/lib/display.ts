@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { IN_APP_AGENT_REDIRECT_TOOL_NAME } from "@langfuse/shared/in-app-agent";
 import type { AgUiMessage } from "@langfuse/shared/in-app-agent";
+import type { InAppAgentUiMessage } from "../schema";
 
 /**
  * Rendering-only derivation of the persisted event log. The canonical messages
@@ -41,7 +42,7 @@ export type InAppAgentDisplayState = {
   toolCallPlacements: Record<string, InAppAgentDisplayPlacement | null>;
 };
 
-type InAppAgentDisplayMessage = AgUiMessage & {
+type InAppAgentDisplayMessage = InAppAgentUiMessage & {
   feedbackMessageId?: string;
 };
 
@@ -266,7 +267,7 @@ export function recordInAppAgentToolCallForDisplay(
 }
 
 export function projectInAppAgentMessagesForDisplay(
-  messages: readonly AgUiMessage[],
+  messages: readonly InAppAgentUiMessage[],
   state: InAppAgentDisplayState,
 ): InAppAgentDisplayMessage[] {
   // Canonical messages stay untouched for persistence and subsequent runs.

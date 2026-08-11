@@ -1,11 +1,12 @@
 import { EventType } from "@ag-ui/core";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   getInAppAgentInstrumentationObservationId,
   getInAppAgentInstrumentationTraceId,
 } from "@langfuse/shared/in-app-agent";
-import type { AgUiRunAgentInput } from "@langfuse/shared/in-app-agent";
-import { InAppAgentInstrumentation } from "@langfuse/shared/in-app-agent/server/instrumentation";
+import type { AgUiRunAgentInput } from "./types";
+import { InAppAgentInstrumentation } from "./instrumentation";
 
 const runId = "run-1";
 const traceId = getInAppAgentInstrumentationTraceId(runId);

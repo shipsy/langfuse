@@ -2,6 +2,7 @@ import type { ProjectScope } from "../../features/rbac/projectAccessRights";
 import { hasProjectAccessByRole } from "../../features/rbac/projectAccessRights";
 import { Role } from "../../db";
 import { IN_APP_AGENT_REDIRECT_TOOL_NAME } from "../constants";
+import { z } from "zod";
 
 type InAppAgentMcpToolApproval = "auto" | "approval";
 
@@ -351,6 +352,26 @@ export const IN_APP_AGENT_LANGFUSE_MCP_TOOL_NAMES =
       IN_APP_AGENT_LANGFUSE_MCP_TOOL_POLICIES,
     ) as InAppAgentLangfuseMcpToolName[],
   );
+
+const InAppAgentLangfuseMcpToolNameSchema =
+  z.custom<InAppAgentLangfuseMcpToolName>(
+    (value) =>
+      typeof value === "string" &&
+      IN_APP_AGENT_LANGFUSE_MCP_TOOL_NAMES.has(
+        value as InAppAgentLangfuseMcpToolName,
+      ),
+    { message: "Invalid MCP tool name" },
+  );
+
+export const InAppAgentMcpRunOverrideSchema = z.object({
+  toolName: InAppAgentLangfuseMcpToolNameSchema,
+});
+
+export async function createInAppAgentMcpRunOverride(params: {
+  toolName: InAppAgentLangfuseMcpToolName;
+}) {
+  return JSON.stringify({ toolName: params.toolName });
+}
 
 const IN_APP_AGENT_AUTO_APPROVED_EXTERNAL_TOOL_NAMES = new Set([
   IN_APP_AGENT_REDIRECT_TOOL_NAME,

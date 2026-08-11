@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ScanSearch } from "lucide-react";
-import { InAppAgentRunStatus } from "@langfuse/shared";
+import { InAppAgentRunStatus } from "@langfuse/shared/in-app-agent";
 import { TooltipProvider } from "@/src/components/ui/tooltip";
 import {
   InAppAgentWindow,

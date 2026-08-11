@@ -1,37 +1,28 @@
 import { EventType } from "@ag-ui/core";
 import { Agent } from "@mastra/core/agent";
 import { MCPClient } from "@mastra/mcp";
-import { describe, expect, expectTypeOf, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { AgUiEvent } from "@langfuse/shared/in-app-agent";
 import {
   IN_APP_AGENT_MCP_TOOL_OVERRIDE_HEADER,
-  IN_APP_AGENT_MCP_USER_AGENT,
   IN_APP_AGENT_REDIRECT_TOOL_NAME,
   IN_APP_AGENT_TOOL_REJECTION_ERROR_CODE,
 } from "@langfuse/shared/in-app-agent";
-import {
-  patchMastraApprovalChunks,
-  type createAgUiStream,
-} from "@langfuse/shared/in-app-agent/server/agent";
+import { patchMastraApprovalChunks, type createAgUiStream } from "./agent";
 import {
   createInAppAgentSandbox,
   type SandboxProvider,
   type SandboxSession,
-} from "@langfuse/shared/in-app-agent/server/sandbox";
-import {
-  IN_APP_AGENT_LANGFUSE_MCP_TOOL_POLICIES,
-  type InAppAgentLangfuseMcpToolName,
-} from "@langfuse/shared/in-app-agent/server/mcpPolicy";
+} from "./sandbox";
 import {
   DEFAULT_SIDEBAR_HIDDEN_ENVIRONMENTS,
   decodeFiltersGeneric,
 } from "@langfuse/shared";
-import "@/src/features/mcp/server/bootstrap";
-import type { McpToolName } from "@/src/features/mcp/server/bootstrap";
-import { toolRegistry } from "@/src/features/mcp/server/registry";
 import type { Langfuse } from "langfuse";
-import type { InAppAgentTracingConfig } from "@langfuse/shared/in-app-agent/server/instrumentation";
+import type { InAppAgentTracingConfig } from "./instrumentation";
+
+const EXPECTED_MCP_USER_AGENT = "langfuse-in-app-agent";
 
 // Shape of the tool entries the mocked MCP client feeds into the Agent
 // constructor. `Agent`'s own `tools` type is a `DynamicArgument` union that
@@ -277,7 +268,7 @@ vi.mock("@mastra/mcp", () => ({
   }),
 }));
 
-vi.mock("@langfuse/shared/in-app-agent/server/instrumentation", () => ({
+vi.mock("./instrumentation", () => ({
   createInAppAgentInstrumentation:
     instrumentationMocks.createInAppAgentInstrumentation,
 }));
@@ -429,25 +420,6 @@ describe("patchMastraApprovalChunks", () => {
   });
 });
 
-describe("IN_APP_AGENT_LANGFUSE_MCP_TOOL_POLICIES", () => {
-  const getRegisteredLangfuseMcpTools = () =>
-    toolRegistry
-      .getFeatures()
-      .flatMap((feature) => feature.tools.map((tool) => tool.definition));
-
-  it("classifies every Langfuse MCP tool exactly once", () => {
-    expectTypeOf<InAppAgentLangfuseMcpToolName>().toEqualTypeOf<McpToolName>();
-
-    const tools = getRegisteredLangfuseMcpTools();
-    const registeredToolNames = tools.map((tool) => tool.name).sort();
-    const classifiedToolNames = Object.keys(
-      IN_APP_AGENT_LANGFUSE_MCP_TOOL_POLICIES,
-    ).sort();
-
-    expect(classifiedToolNames).toEqual(registeredToolNames);
-  });
-});
-
 describe("createAgUiStream", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -459,8 +431,7 @@ describe("createAgUiStream", () => {
   });
 
   it("serializes valid events including adapter snapshots and reasoning messages", async () => {
-    const { createAgUiStream } =
-      await import("@langfuse/shared/in-app-agent/server/agent");
+    const { createAgUiStream } = await import("./agent");
     const input = {
       threadId: "conversation-1",
       runId: "run-1",
@@ -834,8 +805,7 @@ describe("createAgUiStream", () => {
   });
 
   it("does not enable Bedrock reasoning for non-Claude models", async () => {
-    const { createAgUiStream } =
-      await import("@langfuse/shared/in-app-agent/server/agent");
+    const { createAgUiStream } = await import("./agent");
     const input = {
       threadId: "conversation-1",
       runId: "run-1",
@@ -906,8 +876,7 @@ describe("createAgUiStream", () => {
   });
 
   it("executes approved tools manually and continues with tool result history", async () => {
-    const { createAgUiStream } =
-      await import("@langfuse/shared/in-app-agent/server/agent");
+    const { createAgUiStream } = await import("./agent");
     const input = createToolApprovalResumeInput(true);
     adapterEvents.inputs = [];
     adapterEvents.items = [
@@ -998,7 +967,7 @@ describe("createAgUiStream", () => {
           requestInit: {
             headers: expect.objectContaining({
               Authorization: expect.stringContaining("Basic "),
-              "User-Agent": IN_APP_AGENT_MCP_USER_AGENT,
+              "User-Agent": EXPECTED_MCP_USER_AGENT,
               [IN_APP_AGENT_MCP_TOOL_OVERRIDE_HEADER]: "run-override",
             }),
           },
@@ -1006,7 +975,7 @@ describe("createAgUiStream", () => {
         langfuseDocs: {
           requestInit: {
             headers: expect.objectContaining({
-              "User-Agent": IN_APP_AGENT_MCP_USER_AGENT,
+              "User-Agent": EXPECTED_MCP_USER_AGENT,
             }),
           },
         },
@@ -1018,14 +987,14 @@ describe("createAgUiStream", () => {
         langfuse: {
           requestInit: {
             headers: expect.objectContaining({
-              "User-Agent": IN_APP_AGENT_MCP_USER_AGENT,
+              "User-Agent": EXPECTED_MCP_USER_AGENT,
             }),
           },
         },
         langfuseDocs: {
           requestInit: {
             headers: expect.objectContaining({
-              "User-Agent": IN_APP_AGENT_MCP_USER_AGENT,
+              "User-Agent": EXPECTED_MCP_USER_AGENT,
             }),
           },
         },
@@ -1101,8 +1070,7 @@ describe("createAgUiStream", () => {
   });
 
   it("persists raw silent output for approved tools while resuming with redacted content", async () => {
-    const { createAgUiStream } =
-      await import("@langfuse/shared/in-app-agent/server/agent");
+    const { createAgUiStream } = await import("./agent");
     const input = createToolApprovalResumeInput(true, { silent: true });
     adapterEvents.createScoreConfigExecute.mockResolvedValueOnce({
       type: "silent-mcp-output",
@@ -1183,8 +1151,7 @@ describe("createAgUiStream", () => {
   });
 
   it("continues approved tools with a tool error result when execution fails", async () => {
-    const { createAgUiStream } =
-      await import("@langfuse/shared/in-app-agent/server/agent");
+    const { createAgUiStream } = await import("./agent");
     const input = createToolApprovalResumeInput(true);
     const validationErrorMessage =
       "MCP error -32602: Validation failed: categories: Category must be an array of objects with label value pairs, where labels and values are unique.";
@@ -1318,8 +1285,7 @@ describe("createAgUiStream", () => {
   });
 
   it("escapes screen context delimiters before compiling prompt instructions", async () => {
-    const { createAgUiStream } =
-      await import("@langfuse/shared/in-app-agent/server/agent");
+    const { createAgUiStream } = await import("./agent");
     const input = {
       threadId: "conversation-1",
       runId: "run-1",
@@ -1392,8 +1358,7 @@ describe("createAgUiStream", () => {
   });
 
   it("continues after rejected tools and asks the user how to proceed", async () => {
-    const { createAgUiStream } =
-      await import("@langfuse/shared/in-app-agent/server/agent");
+    const { createAgUiStream } = await import("./agent");
     const input = createToolApprovalResumeInput(false);
     const rejectionError = JSON.stringify({
       code: IN_APP_AGENT_TOOL_REJECTION_ERROR_CODE,
@@ -1565,8 +1530,7 @@ describe("createAgUiStream", () => {
   });
 
   it("uses V4-compatible filters for traces redirect actions", async () => {
-    const { createAgUiStream } =
-      await import("@langfuse/shared/in-app-agent/server/agent");
+    const { createAgUiStream } = await import("./agent");
     const input = {
       threadId: "conversation-1",
       runId: "run-1",
@@ -1645,8 +1609,7 @@ describe("createAgUiStream", () => {
   });
 
   it("does not expose sandbox tools when sandboxing is disabled", async () => {
-    const { createAgUiStream } =
-      await import("@langfuse/shared/in-app-agent/server/agent");
+    const { createAgUiStream } = await import("./agent");
     const input = {
       threadId: "conversation-1",
       runId: "run-1",

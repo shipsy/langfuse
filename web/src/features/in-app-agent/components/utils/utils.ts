@@ -11,11 +11,14 @@ import {
 import {
   AgUiMessageSchema,
   type AgUiMessage,
+  InAppAgentRedirectActionToolResultSchema,
+} from "@langfuse/shared/in-app-agent";
+import {
+  InAppAgentMessageFeedbackSchema,
   InAppAgentRateLimitErrorResponseSchema,
   type InAppAgentMessageSource,
-  InAppAgentRedirectActionToolResultSchema,
   InAppAgentMessageSourceSchema,
-} from "@langfuse/shared/in-app-agent";
+} from "../../schema";
 
 export type InAppAgentError =
   | { type: "generic"; message: string }
@@ -25,6 +28,7 @@ const InAppAiAgentMessageSchema = AgUiMessageSchema.and(
   z.object({
     isLoading: z.boolean().optional(),
     feedbackMessageId: z.string().optional(),
+    feedback: InAppAgentMessageFeedbackSchema.optional(),
   }),
 );
 

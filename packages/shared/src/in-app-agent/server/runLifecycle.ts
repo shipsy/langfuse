@@ -1,13 +1,13 @@
+import { LangfuseConflictError } from "../../index";
 import {
   InAppAgentRunErrorCode,
   InAppAgentRunStatus,
   InAppAgentRunStatusSchema,
-  LangfuseConflictError,
-} from "../../index";
+} from "../../features/inAppAgent/types";
 import { Prisma } from "../../db";
 import type { InAppAgentRun, PrismaClient } from "../../db";
 import { logger } from "../../server";
-import { buildInAppAgentApprovalDecisionEvent } from "../backgroundWatch";
+import { buildInAppAgentApprovalDecisionEvent } from "../approvalEvents";
 import type { AgUiEvent } from "../schema";
 import {
   InAppAgentRunRequestSchema,

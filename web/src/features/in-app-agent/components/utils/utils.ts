@@ -645,7 +645,7 @@ function getRedirectActionFromToolResult(
   }
 }
 
-export function extractLangfuseDocsSources(
+function extractLangfuseDocsSources(
   tools: readonly InAppAgentToolCallContent[],
 ): InAppAgentMessageSource[] {
   return mergeSources(

@@ -7,7 +7,7 @@ import {
 } from "../constants";
 import type { AgUiEvent, AgUiMessage, AgUiRunAgentInput } from "../schema";
 import { compactTextMessageChunks } from "./eventCompaction";
-import type { InAppAgentUserAccess } from "./tools";
+import type { InAppAgentUserAccess } from "./mcpPolicy";
 import { assertUnreachable } from "../../utils/typeChecks";
 
 export type InAppAgentTracingConfig = {

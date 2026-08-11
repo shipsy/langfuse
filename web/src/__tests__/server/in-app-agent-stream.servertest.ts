@@ -22,7 +22,7 @@ import {
 import {
   IN_APP_AGENT_LANGFUSE_MCP_TOOL_POLICIES,
   type InAppAgentLangfuseMcpToolName,
-} from "@langfuse/shared/in-app-agent/server/tools";
+} from "@langfuse/shared/in-app-agent/server/mcpPolicy";
 import {
   DEFAULT_SIDEBAR_HIDDEN_ENVIRONMENTS,
   decodeFiltersGeneric,

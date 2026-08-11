@@ -22,12 +22,14 @@ import { createInAppAgentInstrumentation } from "./instrumentation";
 import {
   createSandboxTools,
   createRedirectActionTool,
-  filterInAppAgentAvailableLangfuseMcpTools,
-  type CompletedInAppAgentMcpToolCall,
-  type InAppAgentUserAccess,
   withOptionalSilentMcpOutput,
-  withInAppAgentToolApproval,
 } from "./tools";
+import type { CompletedInAppAgentMcpToolCall } from "./toolResults";
+import {
+  filterInAppAgentAvailableLangfuseMcpTools,
+  type InAppAgentUserAccess,
+  withInAppAgentToolApproval,
+} from "./mcpPolicy";
 import { toPublicEvent } from "./watch";
 import { LANGFUSE_IN_APP_AGENT_SKILLS } from "./skills";
 import type { InAppAgentSandbox } from "./sandbox";

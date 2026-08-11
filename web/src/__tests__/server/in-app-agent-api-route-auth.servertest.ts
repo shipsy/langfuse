@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import { env } from "@/src/env.mjs";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { filterInAppAgentAvailableLangfuseMcpTools } from "@langfuse/shared/in-app-agent/server/tools";
+import { filterInAppAgentAvailableLangfuseMcpTools } from "@langfuse/shared/in-app-agent/server/mcpPolicy";
 import { prisma } from "@langfuse/shared/src/db";
 import {
   createAndAddApiKeysToDb,

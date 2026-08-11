@@ -41,8 +41,8 @@ import {
   type CompletedInAppAgentMcpToolCall,
   getPublicInAppAgentMcpToolResultContent,
   getSandboxInAppAgentMcpToolResultContent,
-  IN_APP_AGENT_SANDBOX_TOOL_NAMES,
-} from "./tools";
+} from "./toolResults";
+import { IN_APP_AGENT_SANDBOX_TOOL_NAMES } from "./mcpPolicy";
 
 export const ACTIVE_RUN_CONFLICT_MESSAGE =
   "Assistant is already responding in this conversation";
@@ -405,37 +405,12 @@ export function createSandboxToolCallFileAccumulator(
   };
 }
 
-export function getSandboxToolCallFiles(
-  events: readonly Omit<PersistedConversationEvent, "sequenceNumber">[],
-) {
-  return createSandboxToolCallFileAccumulator(events).getFiles();
-}
-
 export async function getConversationMessages(params: {
   prisma: PrismaClient;
   projectId: string;
   conversationId: string;
 }) {
   return getMessagesFromPersistedEvents(await getConversationEvents(params));
-}
-
-export async function getConversationMessagesForDisplay(params: {
-  prisma: PrismaClient;
-  projectId: string;
-  conversationId: string;
-}) {
-  return getConversationMessagesForDisplayFromEvents(
-    await getConversationEvents(params),
-  );
-}
-
-export function getConversationMessagesForDisplayFromEvents(
-  events: readonly PersistedConversationEvent[],
-) {
-  const messages = getMessagesFromPersistedEvents(events);
-  return redactSilentToolMessages(
-    dropEmptyAssistantMessages(dropUnpairedAssistantToolCalls(messages)),
-  );
 }
 
 export async function getConversationMessagesForReplay(params: {
@@ -594,16 +569,6 @@ ${JSON.stringify(transcript, null, 2)}
       conversationId: params.conversationId,
     });
   }
-}
-
-export function getMessagesFromEvents(events: readonly AgUiEvent[]) {
-  const accumulator = createConversationMessageAccumulator([]);
-
-  for (const event of events) {
-    accumulator.processEvent(event);
-  }
-
-  return accumulator.getMessages();
 }
 
 function getMessagesFromPersistedEvents(

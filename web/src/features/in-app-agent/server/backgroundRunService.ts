@@ -20,9 +20,9 @@ import {
   createInAppAgentMessageId,
   createInAppAgentRunId,
   parseInAppAgentApprovalDecisionEvent,
+  parseInAppAgentInterruptEvent,
   type AgUiRunAgentInput,
 } from "@langfuse/shared/in-app-agent";
-import { parseInAppAgentInterruptEvent } from "@langfuse/shared/in-app-agent/server/human-in-the-loop";
 import {
   ensureOwnedConversation,
   getConversationEvents,

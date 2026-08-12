@@ -76,15 +76,19 @@ Always fetch pricing from the provider's official docs before editing.
   models must NOT have a Large Context tier in the pricing file. Models not on this list
   (e.g. Sonnet 4.5, Haiku 4.5) may retain a Large Context tier if it was previously set.
   The Sonnet 4.6 Large Context tier was found and removed during the June 2026 audit.
-- **Claude Sonnet 5 introductory pricing** — The API model ID is `claude-sonnet-5` (no
-  date suffix; pinned snapshot, not an alias). Introductory pricing of $2/$10 per
-  input/output MTok is in effect through August 31, 2026; standard pricing of $3/$15 will
-  apply from September 1, 2026. Cache write 5m = $2.50/MTok, 1h = $4/MTok, read =
-  $0.20/MTok during introductory period. Since the pricing schema cannot express
-  time-based tiers, the file holds the current introductory prices; update to $3/$15 and
-  cache equivalents ($3.75/$6/$0.30) after August 31, 2026. AWS Bedrock ID:
-  `anthropic.claude-sonnet-5`. The model is in the flat long-context list (no Large
-  Context tier). Added to pricing file and `anthropicModels` in July 2026 audit.
+- **Claude Sonnet 5 pricing is now permanent at the introductory rate (resolved August 12
+  2026)** — The API model ID is `claude-sonnet-5` (no date suffix; pinned snapshot, not an
+  alias). Pricing is $2/$10 per input/output MTok; cache write 5m = $2.50/MTok, 1h =
+  $4/MTok, read = $0.20/MTok. This was originally announced as introductory pricing
+  through August 31, 2026 with a scheduled increase to $3/$15 (cache $3.75/$6/$0.30) on
+  September 1, 2026. The official pricing page now carries an explicit note: "The $2/$10
+  per million input/output token pricing for Claude Sonnet 5 ... is now the standard
+  price. The previously scheduled increase ... will not occur." No file change was needed
+  since the file already held the $2/$10 rate — this closes the long-standing unresolved
+  finding tracked in prior audits; do not re-flag a pending September 1 2026 price
+  increase for this model. AWS Bedrock ID: `anthropic.claude-sonnet-5`. The model is in
+  the flat long-context list (no Large Context tier). Added to pricing file and
+  `anthropicModels` in July 2026 audit.
 - **Claude Mythos Preview** — Listed in the Anthropic long-context pricing section and on
   the models page (access is invitation-only via Project Glasswing) but has NO separate
   pricing row in the main model pricing table and NO selectable-model entry in types.ts.

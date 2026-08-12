@@ -184,6 +184,22 @@ pipeline {
         failure {
             echo "Pipeline failed — check the stage log above. Worker deploys before web; if worker deployed and stabilized but web's stage failed, worker is already on the new version and web is still on the old one — finish web's rollout manually before leaving it in that state."
         }
+        always {
+            // Cleanup runs after every build, pass or fail — the checked-out
+            // monorepo source and the locally built images are only useful
+            // for the duration of this run; ECR (not the agent) is the
+            // system of record for the images going forward.
+            sh '''
+                docker rmi "$ECR_REGISTRY/langfuse-web:${LANGFUSE_VERSION}" || true
+                docker rmi "$ECR_REGISTRY/langfuse-worker:${LANGFUSE_VERSION}" || true
+                if [ "${TAG_AS_LATEST}" = "true" ]; then
+                    docker rmi "$ECR_REGISTRY/langfuse-web:latest" || true
+                    docker rmi "$ECR_REGISTRY/langfuse-worker:latest" || true
+                fi
+                docker image prune -f || true
+            '''
+            cleanWs(deleteDirs: true, notFailBuild: true)
+        }
     }
 }
 
